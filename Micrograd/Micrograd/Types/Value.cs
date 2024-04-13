@@ -12,15 +12,19 @@ public class Value(
 {
     public double Data { get; } = data;
 
-    public double Grad { get; set; } = 0;
+    public double Grad { get; set; }
 
     public string? Label { get; set; } = label;
 
     public OperationType Operation { get; } = operation;
 
-    public Action Backward { get; private set; } = () => { };
+    private readonly HashSet<Value> _children = children is not null
+        ? children.Value.B is not null
+            ? [children.Value.A, children.Value.B]
+            : [children.Value.A]
+        : [];
 
-    private (Value A, Value? B)? _children = children;
+    private Action _backward = () => { };
 
     public static implicit operator Value(double data) => new(data);
     public static implicit operator double(Value value) => value.Data;
@@ -33,38 +37,80 @@ public class Value(
     public static Value operator *(Value a, double b) => Multiply(a, new Value(b));
     public static Value operator *(double a, Value b) => Multiply(new Value(a), b);
 
-    private static Value Add(Value left, Value right)
+    private static Value Add(Value a, Value b)
     {
-        var newValue = new Value(left.Data + right.Data, operation: OperationType.Add, children: (left, right));
+        var newValue = new Value(a.Data + b.Data, operation: OperationType.Add, children: (a, b));
 
-        newValue.Backward = () =>
+        newValue._backward = () =>
         {
-            left.Grad += newValue.Grad;
-            right.Grad += newValue.Grad;
+            a.Grad += newValue.Grad;
+            b.Grad += newValue.Grad;
         };
 
         return newValue;
     }
 
-    private static Value Multiply(Value left, Value right)
+    private static Value Multiply(Value a, Value b)
     {
-        var newValue = new Value(left.Data * right.Data, operation: OperationType.Multiply, children: (left, right));
+        var newValue = new Value(a.Data * b.Data, operation: OperationType.Multiply, children: (a, b));
 
-        newValue.Backward = () =>
+        newValue._backward = () =>
         {
-            left.Grad += right.Data * newValue.Grad;
-            right.Grad += left.Data * newValue.Grad;
+            a.Grad += b.Data * newValue.Grad;
+            b.Grad += a.Data * newValue.Grad;
         };
 
         return newValue;
     }
 
-    public Value Tanh()
+    public void Backward()
+    {
+        var topo = new List<Value>();
+        var visited = new HashSet<Value>();
+
+        BuildTopo(this);
+
+        Grad = 1;
+        topo.Reverse();
+
+        foreach (var vertex in topo)
+        {
+            vertex._backward();
+        }
+
+        return;
+
+        void BuildTopo(Value value)
+        {
+            if (visited.Add(value))
+            {
+                foreach (var child in value._children)
+                {
+                    BuildTopo(child);
+                }
+
+                topo.Add(value);
+            }
+        }
+    }
+
+    public Value Tanh(string label)
     {
         var newValue = new Value(Math.Tanh(Data), operation: OperationType.Tanh, children: (this, null));
 
-        newValue.Backward = () => { Grad += (1 - Math.Pow(newValue.Data, 2)) * newValue.Grad; };
+        newValue._backward = () =>
+        {
+            //
+            Grad += (1 - Math.Pow(newValue.Data, 2)) * newValue.Grad;
+        };
+
+        newValue.Label = label;
 
         return newValue;
+    }
+
+    public override string ToString()
+    {
+        return $"{Label} | data: {Data} | grad: {Grad}";
     }
 }

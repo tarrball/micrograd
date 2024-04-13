@@ -1,5 +1,4 @@
 using Micrograd.Types;
-using Shouldly;
 
 namespace MicrogradTests;
 
@@ -26,12 +25,22 @@ public class SanityTests
 
         var b = new Value(6.8814, "b");
         var n = b + x1w1px2w2;
+        n.Label = "n";
 
-        var o = n.Tanh();
+        var o = n.Tanh("o");
 
         o.Grad = 1;
         o.Backward();
 
-        Console.WriteLine(n.Grad);
+        Console.WriteLine(o.ToString());
+        Console.WriteLine(n.ToString());
+        Console.WriteLine(b.ToString());
+        Console.WriteLine(x1w1px2w2.ToString());
+        Console.WriteLine(x1w1.ToString());
+        Console.WriteLine(x2w2.ToString());
+        Console.WriteLine(w1.ToString());
+        Console.WriteLine(w2.ToString());
+        Console.WriteLine(x1.ToString());
+        Console.WriteLine(x2.ToString());
     }
 }
