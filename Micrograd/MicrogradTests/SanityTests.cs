@@ -7,12 +7,31 @@ namespace MicrogradTests;
 public class SanityTests
 {
     [TestMethod]
-    public void TestValue()
+    public void SanityCheck()
     {
-        var a = new Value(3.0);
-        var b = new Value(2.0);
-        var c = a + b;
-        c.Data.ShouldBe(5.0);
-        c.Grad.ShouldBe(0.0);
+        var x1 = new Value(2, "x1");
+        var w1 = new Value(-3, "w1");
+
+        var x2 = new Value(0, "x2");
+        var w2 = new Value(1, "w2");
+
+        var x1w1 = x1 * w1;
+        x1w1.Label = "x1*w1";
+
+        var x2w2 = x2 * w2;
+        x2w2.Label = "x2*w2";
+
+        var x1w1px2w2 = x1w1 + x2w2;
+        x1w1px2w2.Label = "x1w1+x2w2";
+
+        var b = new Value(6.8814, "b");
+        var n = b + x1w1px2w2;
+
+        var o = n.Tanh();
+
+        o.Grad = 1;
+        o.Backward();
+
+        Console.WriteLine(n.Grad);
     }
 }

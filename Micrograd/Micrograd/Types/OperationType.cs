@@ -6,5 +6,6 @@ public enum OperationType
     Add,
     Divide,
     Multiply,
-    Subtract
+    Subtract,
+    Tanh
 }
