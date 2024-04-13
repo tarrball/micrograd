@@ -28,7 +28,8 @@ public class SanityTests
         var n = b + x1w1px2w2;
         n.Label = "n";
 
-        var o = n.Tanh("o");
+        var o = n.Tanh();
+        o.Label = "o";
 
         o.Grad = 1;
         o.Backward();
@@ -69,5 +70,14 @@ public class SanityTests
         Console.WriteLine(w2.ToString());
         Console.WriteLine(x1.ToString());
         Console.WriteLine(x2.ToString());
+    }
+
+    [TestMethod]
+    public void SanityCheck_Mlp()
+    {
+        var x = new[] { new Value(2), new Value(3) };
+        var n = new Neuron(2);
+
+        Console.WriteLine(n.Calculate(x));
     }
 }

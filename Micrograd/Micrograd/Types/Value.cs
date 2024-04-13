@@ -10,8 +10,14 @@ public class Value(
     (Value A, Value? B)? children = null
 )
 {
+    /// <summary>
+    /// Scalar value
+    /// </summary>
     public double Data { get; } = data;
 
+    /// <summary>
+    /// Gradient
+    /// </summary>
     public double Grad { get; set; }
 
     public string? Label { get; set; } = label;
@@ -94,19 +100,17 @@ public class Value(
         }
     }
 
-    public Value Tanh(string label)
+    public Value Tanh()
     {
         var newValue = new Value(Math.Tanh(Data), operation: OperationType.Tanh, children: (this, null));
 
         newValue._backward = () => { Grad += (1 - Math.Pow(newValue.Data, 2)) * newValue.Grad; };
-
-        newValue.Label = label;
 
         return newValue;
     }
 
     public override string ToString()
     {
-        return $"{Label} | data: {Data} | grad: {Grad}";
+        return $"{Label} | data: {Data} | gradient: {Grad}";
     }
 }
