@@ -98,11 +98,7 @@ public class Value(
     {
         var newValue = new Value(Math.Tanh(Data), operation: OperationType.Tanh, children: (this, null));
 
-        newValue._backward = () =>
-        {
-            //
-            Grad += (1 - Math.Pow(newValue.Data, 2)) * newValue.Grad;
-        };
+        newValue._backward = () => { Grad += (1 - Math.Pow(newValue.Data, 2)) * newValue.Grad; };
 
         newValue.Label = label;
 
