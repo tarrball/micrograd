@@ -1,0 +1,39 @@
+# .gitignore for .NET Core projects using JetBrains Rider
+
+## Build outputs
+bin/
+obj/
+
+## User-specific files
+*.user
+*.suo
+
+## Rider-specific files
+.idea/
+*.sln.iml
+
+## VS Code files (if also used)
+.vscode/
+
+## Logs and databases
+*.log
+*.ldf
+*.mdf
+
+## Packages
+*.nupkg
+packages/
+
+## Tools
+tools/
+
+## Project files
+*.csproj.user
+*.pubxml
+publishprofile/
+
+## Others
+.DS_Store
+*.swp
+*~
+
