@@ -1,4 +1,5 @@
 using Micrograd.Types;
+using Shouldly;
 
 namespace MicrogradTests;
 
@@ -6,7 +7,7 @@ namespace MicrogradTests;
 public class SanityTests
 {
     [TestMethod]
-    public void SanityCheck()
+    public void SanityCheck_DemoVideoExpressionGraph()
     {
         var x1 = new Value(2, "x1");
         var w1 = new Value(-3, "w1");
@@ -31,6 +32,32 @@ public class SanityTests
 
         o.Grad = 1;
         o.Backward();
+
+        o.Data.ShouldBe(0.7071, .0001);
+        o.Grad.ShouldBe(1);
+
+        n.Data.ShouldBe(0.8814, .0001);
+        n.Grad.ShouldBe(0.5, .0001);
+
+        b.Data.ShouldBe(6.8814, .0001);
+        b.Grad.ShouldBe(0.5, .0001);
+
+        x1w1px2w2.Data.ShouldBe(-6);
+        x1w1px2w2.Grad.ShouldBe(0.5, .0001);
+
+        x1w1.Data.ShouldBe(-6);
+        x1w1.Grad.ShouldBe(0.5, .0001);
+        x2w2.Data.ShouldBe(0);
+        x2w2.Grad.ShouldBe(0.5, .0001);
+
+        w1.Data.ShouldBe(-3);
+        w1.Grad.ShouldBe(1, .0001);
+        w2.Data.ShouldBe(1);
+        w2.Grad.ShouldBe(0);
+        x1.Data.ShouldBe(2);
+        x1.Grad.ShouldBe(-1.5, .0001);
+        x2.Data.ShouldBe(0);
+        x2.Grad.ShouldBe(0.5, .0001);
 
         Console.WriteLine(o.ToString());
         Console.WriteLine(n.ToString());
